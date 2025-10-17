@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LLM Trajectory Explorer</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preload" href="styles.css" as="style" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <header class="sidebar__header">
+          <h1>LLM Trajectory Explorer</h1>
+          <p>Browse captured agent trajectories and replay each action.</p>
+        </header>
+        <div class="sidebar__search">
+          <input
+            id="task-search"
+            type="search"
+            placeholder="Filter tasks…"
+            aria-label="Filter tasks"
+            autocomplete="off"
+          />
+        </div>
+        <nav class="sidebar__tasks" aria-label="Task list">
+          <ul id="task-list"></ul>
+        </nav>
+      </aside>
+      <main class="content" id="content" tabindex="-1">
+        <section class="empty-state" id="empty-state">
+          <div class="empty-state__card">
+            <h2>Select a trajectory</h2>
+            <p>
+              Choose any task from the left to inspect the associated screenshots,
+              agent actions, and raw prompts.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="scripts/app.js"></script>
+  </body>
+</html>

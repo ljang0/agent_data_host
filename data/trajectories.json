@@ -1,0 +1,868 @@
+{
+  "generatedAt": "2025-10-17T04:11:29.921Z",
+  "taskCount": 3,
+  "tasks": [
+    {
+      "name": "Can you pull up the box score of the NFL games ?",
+      "slug": "can-you-pull-up-the-box-score-of-the-nfl-games",
+      "sourceDir": "data/Can you pull up the box score of the NFL games ?",
+      "systemPrompt": "You are an agent viewing a screenshot from the user and then emitting the action. Clicks are provided as normalized ratios (x/width, y/height).",
+      "stats": {
+        "totalSteps": 13,
+        "actionBreakdown": {
+          "type": 2,
+          "click": 3,
+          "scroll": 7,
+          "stop": 1
+        }
+      },
+      "steps": [
+        {
+          "step": 0,
+          "user": {
+            "raw": "TASK:Can you pull up the box score of the NFL games ? <attachment:0>",
+            "text": "TASK:Can you pull up the box score of the NFL games ?",
+            "attachments": [
+              {
+                "index": 0,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_0.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_0.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "type",
+            "raw": "type: NF",
+            "text": "NF"
+          }
+        },
+        {
+          "step": 1,
+          "user": {
+            "raw": "<attachment:1>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 1,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_2.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_2.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.608333, 0.072222)",
+            "coordinates": {
+              "x": 0.608333,
+              "y": 0.072222,
+              "xPercent": 60.8333,
+              "yPercent": 7.222199999999999
+            }
+          }
+        },
+        {
+          "step": 2,
+          "user": {
+            "raw": "<attachment:2>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 2,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_3.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_3.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "type",
+            "raw": "type: L BOX SCORES TODAY + ENTER",
+            "text": "L BOX SCORES TODAY + ENTER"
+          }
+        },
+        {
+          "step": 3,
+          "user": {
+            "raw": "<attachment:3>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 3,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_22.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_22.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "scroll",
+            "raw": "scroll: up 49 1553 47",
+            "parameters": "up 49 1553 47"
+          }
+        },
+        {
+          "step": 4,
+          "user": {
+            "raw": "<attachment:4>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 4,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_23.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_23.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "scroll",
+            "raw": "scroll: up 54 1983 47",
+            "parameters": "up 54 1983 47"
+          }
+        },
+        {
+          "step": 5,
+          "user": {
+            "raw": "<attachment:5>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 5,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_24.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_24.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.297222, 0.593333)",
+            "coordinates": {
+              "x": 0.297222,
+              "y": 0.593333,
+              "xPercent": 29.722199999999997,
+              "yPercent": 59.3333
+            }
+          }
+        },
+        {
+          "step": 6,
+          "user": {
+            "raw": "<attachment:6>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 6,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_25.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_25.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "scroll",
+            "raw": "scroll: up 23 1171 29",
+            "parameters": "up 23 1171 29"
+          }
+        },
+        {
+          "step": 7,
+          "user": {
+            "raw": "<attachment:7>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 7,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_26.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_26.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "scroll",
+            "raw": "scroll: up 29 1569 29",
+            "parameters": "up 29 1569 29"
+          }
+        },
+        {
+          "step": 8,
+          "user": {
+            "raw": "<attachment:8>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 8,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_27.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_27.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "scroll",
+            "raw": "scroll: up 34 1967 34",
+            "parameters": "up 34 1967 34"
+          }
+        },
+        {
+          "step": 9,
+          "user": {
+            "raw": "<attachment:9>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 9,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_28.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_28.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "scroll",
+            "raw": "scroll: up 38 2668 38",
+            "parameters": "up 38 2668 38"
+          }
+        },
+        {
+          "step": 10,
+          "user": {
+            "raw": "<attachment:10>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 10,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_29.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_29.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "scroll",
+            "raw": "scroll: down 2 464 0",
+            "parameters": "down 2 464 0"
+          }
+        },
+        {
+          "step": 11,
+          "user": {
+            "raw": "<attachment:11>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 11,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_30.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_30.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.654861, 0.334444)",
+            "coordinates": {
+              "x": 0.654861,
+              "y": 0.334444,
+              "xPercent": 65.48610000000001,
+              "yPercent": 33.4444
+            }
+          }
+        },
+        {
+          "step": 12,
+          "user": {
+            "raw": "<attachment:12>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 12,
+                "originalPath": "data/Can you pull up the box score of the NFL games ?/videos/frames_display_1/event_31.png",
+                "assetPath": "data/assets/can-you-pull-up-the-box-score-of-the-nfl-games/videos/frames_display_1/event_31.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "stop",
+            "raw": "stop"
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "role": "system",
+          "content": "You are an agent viewing a screenshot from the user and then emitting the action. Clicks are provided as normalized ratios (x/width, y/height)."
+        },
+        {
+          "role": "user",
+          "content": "TASK:Can you pull up the box score of the NFL games ? <attachment:0>"
+        },
+        {
+          "role": "assistant",
+          "content": "type: NF"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:1>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.608333, 0.072222)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:2>"
+        },
+        {
+          "role": "assistant",
+          "content": "type: L BOX SCORES TODAY + ENTER"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:3>"
+        },
+        {
+          "role": "assistant",
+          "content": "scroll: up 49 1553 47"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:4>"
+        },
+        {
+          "role": "assistant",
+          "content": "scroll: up 54 1983 47"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:5>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.297222, 0.593333)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:6>"
+        },
+        {
+          "role": "assistant",
+          "content": "scroll: up 23 1171 29"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:7>"
+        },
+        {
+          "role": "assistant",
+          "content": "scroll: up 29 1569 29"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:8>"
+        },
+        {
+          "role": "assistant",
+          "content": "scroll: up 34 1967 34"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:9>"
+        },
+        {
+          "role": "assistant",
+          "content": "scroll: up 38 2668 38"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:10>"
+        },
+        {
+          "role": "assistant",
+          "content": "scroll: down 2 464 0"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:11>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.654861, 0.334444)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:12>"
+        },
+        {
+          "role": "assistant",
+          "content": "stop"
+        }
+      ]
+    },
+    {
+      "name": "Can you uninstall the Docker Extension on VsCode?",
+      "slug": "can-you-uninstall-the-docker-extension-on-vscode",
+      "sourceDir": "data/Can you uninstall the Docker Extension on VsCode?",
+      "systemPrompt": "You are an agent viewing a screenshot from the user and then emitting the action. Clicks are provided as normalized ratios (x/width, y/height).",
+      "stats": {
+        "totalSteps": 5,
+        "actionBreakdown": {
+          "click": 4,
+          "stop": 1
+        }
+      },
+      "steps": [
+        {
+          "step": 0,
+          "user": {
+            "raw": "TASK:Can you uninstall the Docker Extension on VsCode? <attachment:0>",
+            "text": "TASK:Can you uninstall the Docker Extension on VsCode?",
+            "attachments": [
+              {
+                "index": 0,
+                "originalPath": "data/Can you uninstall the Docker Extension on VsCode?/videos/frames_display_1/event_0.png",
+                "assetPath": "data/assets/can-you-uninstall-the-docker-extension-on-vscode/videos/frames_display_1/event_0.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.017361, 0.191111)",
+            "coordinates": {
+              "x": 0.017361,
+              "y": 0.191111,
+              "xPercent": 1.7361000000000002,
+              "yPercent": 19.1111
+            }
+          }
+        },
+        {
+          "step": 1,
+          "user": {
+            "raw": "<attachment:1>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 1,
+                "originalPath": "data/Can you uninstall the Docker Extension on VsCode?/videos/frames_display_1/event_1.png",
+                "assetPath": "data/assets/can-you-uninstall-the-docker-extension-on-vscode/videos/frames_display_1/event_1.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.013194, 0.252222)",
+            "coordinates": {
+              "x": 0.013194,
+              "y": 0.252222,
+              "xPercent": 1.3194000000000001,
+              "yPercent": 25.2222
+            }
+          }
+        },
+        {
+          "step": 2,
+          "user": {
+            "raw": "<attachment:2>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 2,
+                "originalPath": "data/Can you uninstall the Docker Extension on VsCode?/videos/frames_display_1/event_2.png",
+                "assetPath": "data/assets/can-you-uninstall-the-docker-extension-on-vscode/videos/frames_display_1/event_2.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.109028, 0.345556)",
+            "coordinates": {
+              "x": 0.109028,
+              "y": 0.345556,
+              "xPercent": 10.9028,
+              "yPercent": 34.5556
+            }
+          }
+        },
+        {
+          "step": 3,
+          "user": {
+            "raw": "<attachment:3>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 3,
+                "originalPath": "data/Can you uninstall the Docker Extension on VsCode?/videos/frames_display_1/event_3.png",
+                "assetPath": "data/assets/can-you-uninstall-the-docker-extension-on-vscode/videos/frames_display_1/event_3.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.440278, 0.184444)",
+            "coordinates": {
+              "x": 0.440278,
+              "y": 0.184444,
+              "xPercent": 44.0278,
+              "yPercent": 18.444399999999998
+            }
+          }
+        },
+        {
+          "step": 4,
+          "user": {
+            "raw": "<attachment:4>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 4,
+                "originalPath": "data/Can you uninstall the Docker Extension on VsCode?/videos/frames_display_1/event_4.png",
+                "assetPath": "data/assets/can-you-uninstall-the-docker-extension-on-vscode/videos/frames_display_1/event_4.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "stop",
+            "raw": "stop"
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "role": "system",
+          "content": "You are an agent viewing a screenshot from the user and then emitting the action. Clicks are provided as normalized ratios (x/width, y/height)."
+        },
+        {
+          "role": "user",
+          "content": "TASK:Can you uninstall the Docker Extension on VsCode? <attachment:0>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.017361, 0.191111)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:1>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.013194, 0.252222)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:2>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.109028, 0.345556)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:3>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.440278, 0.184444)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:4>"
+        },
+        {
+          "role": "assistant",
+          "content": "stop"
+        }
+      ]
+    },
+    {
+      "name": "Find JY Koh's Google Scholar Page and download his latest paper as PDF.",
+      "slug": "find-jy-koh-s-google-scholar-page-and-download-his-latest-paper-as-pdf",
+      "sourceDir": "data/Find JY Koh's Google Scholar Page and download his latest paper as PDF.",
+      "systemPrompt": "You are an agent viewing a screenshot from the user and then emitting the action. Clicks are provided as normalized ratios (x/width, y/height).",
+      "stats": {
+        "totalSteps": 9,
+        "actionBreakdown": {
+          "click": 7,
+          "type": 1,
+          "stop": 1
+        }
+      },
+      "steps": [
+        {
+          "step": 0,
+          "user": {
+            "raw": "TASK:Find JY Koh's Google Scholar Page and download his latest paper as PDF. <attachment:0>",
+            "text": "TASK:Find JY Koh's Google Scholar Page and download his latest paper as PDF.",
+            "attachments": [
+              {
+                "index": 0,
+                "originalPath": "data/Find JY Koh's Google Scholar Page and download his latest paper as PDF./videos/frames_display_1/event_0.png",
+                "assetPath": "data/assets/find-jy-koh-s-google-scholar-page-and-download-his-latest-paper-as-pdf/videos/frames_display_1/event_0.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.624306, 0.074444)",
+            "coordinates": {
+              "x": 0.624306,
+              "y": 0.074444,
+              "xPercent": 62.430600000000005,
+              "yPercent": 7.4444
+            }
+          }
+        },
+        {
+          "step": 1,
+          "user": {
+            "raw": "<attachment:1>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 1,
+                "originalPath": "data/Find JY Koh's Google Scholar Page and download his latest paper as PDF./videos/frames_display_1/event_1.png",
+                "assetPath": "data/assets/find-jy-koh-s-google-scholar-page-and-download-his-latest-paper-as-pdf/videos/frames_display_1/event_1.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "type",
+            "raw": "type: JING YU KOGBACKSPACEH + ENTER",
+            "text": "JING YU KOGBACKSPACEH + ENTER"
+          }
+        },
+        {
+          "step": 2,
+          "user": {
+            "raw": "<attachment:2>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 2,
+                "originalPath": "data/Find JY Koh's Google Scholar Page and download his latest paper as PDF./videos/frames_display_1/event_15.png",
+                "assetPath": "data/assets/find-jy-koh-s-google-scholar-page-and-download-his-latest-paper-as-pdf/videos/frames_display_1/event_15.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.206944, 0.543333)",
+            "coordinates": {
+              "x": 0.206944,
+              "y": 0.543333,
+              "xPercent": 20.694399999999998,
+              "yPercent": 54.333299999999994
+            }
+          }
+        },
+        {
+          "step": 3,
+          "user": {
+            "raw": "<attachment:3>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 3,
+                "originalPath": "data/Find JY Koh's Google Scholar Page and download his latest paper as PDF./videos/frames_display_1/event_16.png",
+                "assetPath": "data/assets/find-jy-koh-s-google-scholar-page-and-download-his-latest-paper-as-pdf/videos/frames_display_1/event_16.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.638889, 0.413333)",
+            "coordinates": {
+              "x": 0.638889,
+              "y": 0.413333,
+              "xPercent": 63.88890000000001,
+              "yPercent": 41.3333
+            }
+          }
+        },
+        {
+          "step": 4,
+          "user": {
+            "raw": "<attachment:4>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 4,
+                "originalPath": "data/Find JY Koh's Google Scholar Page and download his latest paper as PDF./videos/frames_display_1/event_17.png",
+                "assetPath": "data/assets/find-jy-koh-s-google-scholar-page-and-download-his-latest-paper-as-pdf/videos/frames_display_1/event_17.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.275000, 0.455556)",
+            "coordinates": {
+              "x": 0.275,
+              "y": 0.455556,
+              "xPercent": 27.500000000000004,
+              "yPercent": 45.5556
+            }
+          }
+        },
+        {
+          "step": 5,
+          "user": {
+            "raw": "<attachment:5>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 5,
+                "originalPath": "data/Find JY Koh's Google Scholar Page and download his latest paper as PDF./videos/frames_display_1/event_18.png",
+                "assetPath": "data/assets/find-jy-koh-s-google-scholar-page-and-download-his-latest-paper-as-pdf/videos/frames_display_1/event_18.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.683333, 0.216667)",
+            "coordinates": {
+              "x": 0.683333,
+              "y": 0.216667,
+              "xPercent": 68.3333,
+              "yPercent": 21.6667
+            }
+          }
+        },
+        {
+          "step": 6,
+          "user": {
+            "raw": "<attachment:6>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 6,
+                "originalPath": "data/Find JY Koh's Google Scholar Page and download his latest paper as PDF./videos/frames_display_1/event_19.png",
+                "assetPath": "data/assets/find-jy-koh-s-google-scholar-page-and-download-his-latest-paper-as-pdf/videos/frames_display_1/event_19.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.922222, 0.121111)",
+            "coordinates": {
+              "x": 0.922222,
+              "y": 0.121111,
+              "xPercent": 92.2222,
+              "yPercent": 12.1111
+            }
+          }
+        },
+        {
+          "step": 7,
+          "user": {
+            "raw": "<attachment:7>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 7,
+                "originalPath": "data/Find JY Koh's Google Scholar Page and download his latest paper as PDF./videos/frames_display_1/event_20.png",
+                "assetPath": "data/assets/find-jy-koh-s-google-scholar-page-and-download-his-latest-paper-as-pdf/videos/frames_display_1/event_20.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "click",
+            "raw": "click: (0.744444, 0.762222)",
+            "coordinates": {
+              "x": 0.744444,
+              "y": 0.762222,
+              "xPercent": 74.4444,
+              "yPercent": 76.2222
+            }
+          }
+        },
+        {
+          "step": 8,
+          "user": {
+            "raw": "<attachment:8>",
+            "text": "",
+            "attachments": [
+              {
+                "index": 8,
+                "originalPath": "data/Find JY Koh's Google Scholar Page and download his latest paper as PDF./videos/frames_display_1/event_21.png",
+                "assetPath": "data/assets/find-jy-koh-s-google-scholar-page-and-download-his-latest-paper-as-pdf/videos/frames_display_1/event_21.png"
+              }
+            ]
+          },
+          "assistant": {
+            "type": "stop",
+            "raw": "stop"
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "role": "system",
+          "content": "You are an agent viewing a screenshot from the user and then emitting the action. Clicks are provided as normalized ratios (x/width, y/height)."
+        },
+        {
+          "role": "user",
+          "content": "TASK:Find JY Koh's Google Scholar Page and download his latest paper as PDF. <attachment:0>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.624306, 0.074444)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:1>"
+        },
+        {
+          "role": "assistant",
+          "content": "type: JING YU KOGBACKSPACEH + ENTER"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:2>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.206944, 0.543333)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:3>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.638889, 0.413333)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:4>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.275000, 0.455556)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:5>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.683333, 0.216667)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:6>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.922222, 0.121111)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:7>"
+        },
+        {
+          "role": "assistant",
+          "content": "click: (0.744444, 0.762222)"
+        },
+        {
+          "role": "user",
+          "content": "<attachment:8>"
+        },
+        {
+          "role": "assistant",
+          "content": "stop"
+        }
+      ]
+    }
+  ]
+}
