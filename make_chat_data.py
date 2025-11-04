@@ -107,14 +107,90 @@ def copy_asset(
 		if not source.exists():
 			print(f"Warning: missing screenshot {source}")
 			return None, False
-		shutil.copy2(source, destination)
+		try:
+			if source.resolve() == destination.resolve():
+				copied = False
+			else:
+				shutil.copy2(source, destination)
+				copied = True
+		except FileNotFoundError:
+			print(f"Warning: missing screenshot {source}")
+			return None, False
 		copied_assets.add(key)
-		copied = True
 	else:
 		copied = False
 
 	asset_path = Path("data") / "assets" / slug / relative_path
 	return asset_path.as_posix(), copied
+
+
+def derive_annotated_relative_path(relative_path: Path) -> Path:
+	"""Return the relative path for an annotated variant based on the source relative path."""
+	parts = list(relative_path.parts)
+	if not parts:
+		return Path("annotated") / "event.png"
+
+	filename = parts[-1]
+	parent_parts = list(parts[:-1])
+
+	if not parent_parts:
+		annotated_parts = ["annotated"]
+	else:
+		annotated_parts = parent_parts.copy()
+		last_segment = annotated_parts[-1]
+		if last_segment == "imgs":
+			annotated_parts[-1] = "imgs_annotated"
+		elif last_segment.startswith("frames_display_"):
+			annotated_parts[-1] = f"{last_segment}_annotated"
+		elif last_segment.endswith("_annotated") or last_segment == "annotated":
+			# Already annotated; leave as-is.
+			pass
+		else:
+			annotated_parts.append("annotated")
+
+	return Path(*annotated_parts) / filename
+
+
+def derive_annotated_absolute_path(source_path: Path) -> Path:
+	"""Return an absolute path pointing to the annotated variant of source_path."""
+	parent = source_path.parent
+	filename = source_path.name
+
+	if parent.name == "imgs":
+		return parent.with_name("imgs_annotated") / filename
+	if parent.name.startswith("frames_display_"):
+		return parent.with_name(f"{parent.name}_annotated") / filename
+	if parent.name.endswith("_annotated") or parent.name == "annotated":
+		return parent / filename
+
+	return parent / "annotated" / filename
+
+
+def resolve_annotated_variant(
+	source_path: Optional[Path],
+	relative_path: Path,
+	task_dir: Path,
+	assets_root: Path,
+	slug: str,
+) -> Tuple[Optional[Path], Path]:
+	"""Locate an existing annotated variant for a screenshot, if present."""
+	annotated_relative = derive_annotated_relative_path(relative_path)
+
+	candidates = []
+	if source_path and source_path.exists():
+		candidates.append(derive_annotated_absolute_path(source_path))
+
+	# Attempt lookup relative to the task directory (covers most annotation scripts).
+	candidates.append(task_dir / annotated_relative)
+
+	# Fallback: previously copied annotated asset under data/assets.
+	candidates.append(assets_root / slug / annotated_relative)
+
+	for candidate in candidates:
+		if candidate and candidate.exists():
+			return candidate, annotated_relative
+
+	return None, annotated_relative
 
 
 def build_assistant_event(event: Dict[str, Any]) -> Dict[str, Any]:
@@ -144,6 +220,62 @@ def build_assistant_event(event: Dict[str, Any]) -> Dict[str, Any]:
 		text = event.get("key") or ""
 		assistant["text"] = text
 		assistant["raw"] = f"type: {text}" if text else "type"
+	elif action_type == "drag":
+		start_x = event.get("start_x")
+		start_y = event.get("start_y")
+		end_x = event.get("end_x")
+		end_y = event.get("end_y")
+		width = event.get("width_display") or event.get("width")
+		height = event.get("height_display") or event.get("height")
+		start_coords = None
+		end_coords = None
+		if all(isinstance(value, (int, float)) for value in (start_x, start_y, width, height)) and width and height:
+			start_x_norm = start_x / width
+			start_y_norm = start_y / height
+			start_coords = {
+				"x": round(start_x_norm, 6),
+				"y": round(start_y_norm, 6),
+				"xPercent": round(start_x_norm * 100, 4),
+				"yPercent": round(start_y_norm * 100, 4),
+			}
+		if all(isinstance(value, (int, float)) for value in (end_x, end_y, width, height)) and width and height:
+			end_x_norm = end_x / width
+			end_y_norm = end_y / height
+			end_coords = {
+				"x": round(end_x_norm, 6),
+				"y": round(end_y_norm, 6),
+				"xPercent": round(end_x_norm * 100, 4),
+				"yPercent": round(end_y_norm * 100, 4),
+			}
+		if start_coords:
+			assistant["startCoordinates"] = start_coords
+		if end_coords:
+			assistant["endCoordinates"] = end_coords
+		if start_coords and end_coords:
+			assistant["raw"] = (
+				f"drag: ({start_coords['x']:.6f}, {start_coords['y']:.6f}) → ({end_coords['x']:.6f}, {end_coords['y']:.6f})"
+			)
+		else:
+			assistant["raw"] = f"drag: ({start_x}, {start_y}) → ({end_x}, {end_y})"
+		if event.get("button") is not None:
+			assistant["button"] = event.get("button")
+		if event.get("distance") is not None:
+			assistant["distance"] = event.get("distance")
+		if event.get("start_timestamp") is not None:
+			assistant["startTimestamp"] = event.get("start_timestamp")
+		if event.get("end_timestamp") is not None:
+			assistant["endTimestamp"] = event.get("end_timestamp")
+		if event.get("duration") is not None:
+			assistant["duration"] = event.get("duration")
+	elif action_type == "key_combination":
+		combination = event.get("key") or ""
+		translation = event.get("translation") or ""
+		if combination:
+			assistant["combination"] = combination
+		if translation:
+			assistant["translation"] = translation
+		label = translation or combination
+		assistant["raw"] = f"key_combination: {label}" if label else "key_combination"
 	elif action_type == "scroll":
 		direction = event.get("direction")
 		total_amount = event.get("total_amount")
@@ -201,14 +333,25 @@ def build_task_entry(
 
 		attachments: List[Dict[str, Any]] = []
 		if asset_path:
-			original_display = compute_display_path(source_path if source_path else task_dir / relative_asset_path, bases)
-			attachments.append(
-				{
-					"index": step_index,
-					"originalPath": original_display,
-					"assetPath": asset_path,
-				},
-			)
+			original_source = source_path if source_path else task_dir / relative_asset_path
+			original_display = compute_display_path(original_source, bases)
+			attachment_entry: Dict[str, Any] = {
+				"index": step_index,
+				"originalPath": original_display,
+				"assetPath": asset_path,
+			}
+
+			annotated_source, annotated_relative = resolve_annotated_variant(source_path, relative_asset_path, task_dir, assets_root, slug)
+			if annotated_source:
+				annotated_asset_path, annotated_copied = copy_asset(annotated_source, assets_root, slug, annotated_relative, copied_assets)
+				if annotated_copied:
+					asset_copies += 1
+				if annotated_asset_path:
+					annotated_display = compute_display_path(annotated_source, bases)
+					attachment_entry["annotatedAssetPath"] = annotated_asset_path
+					attachment_entry["annotatedOriginalPath"] = annotated_display
+
+			attachments.append(attachment_entry)
 
 		assistant_event = build_assistant_event(event)
 

@@ -96,6 +96,9 @@ def convert_to_llm_format(task_directory: Path, data: Dict, screenshot_subdir: O
 			event_id = i
 		action_type = event.get("type")
 		ss_path = make_screenshot_path(event_id)
+		timestamp = event.get("timestamp")
+		absolute_timestamp = event.get("absoluteTimestamp")
+
 		if action_type == "click":
 			x = event["x"]
 			y = event["y"]
@@ -113,6 +116,42 @@ def convert_to_llm_format(task_directory: Path, data: Dict, screenshot_subdir: O
 				"height_display": height_display,
 				"ss_path": ss_path,
 				"button": event.get("button"),
+				"timestamp": timestamp,
+				"absolute_timestamp": absolute_timestamp,
+			})
+			counter += 1
+		elif action_type == "drag":
+			start_x = event.get("startX")
+			start_y = event.get("startY")
+			end_x = event.get("endX")
+			end_y = event.get("endY")
+			screen_info = event.get("screenInfo") or {}
+			current_display = screen_info.get("currentDisplay") or {}
+			bounds = current_display.get("bounds") or {}
+			width_display = bounds.get("width")
+			height_display = bounds.get("height")
+			start_ts = event.get("startTimestamp")
+			end_ts = event.get("timestamp")
+			duration = None
+			if isinstance(start_ts, (int, float)) and isinstance(end_ts, (int, float)):
+				duration = max(0.0, end_ts - start_ts)
+			llm_format.append({
+				"id": counter,
+				"type": "drag",
+				"start_x": start_x,
+				"start_y": start_y,
+				"end_x": end_x,
+				"end_y": end_y,
+				"start_timestamp": start_ts,
+				"end_timestamp": end_ts,
+				"duration": duration,
+				"distance": event.get("distance"),
+				"button": event.get("button"),
+				"width_display": width_display,
+				"height_display": height_display,
+				"ss_path": ss_path,
+				"timestamp": timestamp,
+				"absolute_timestamp": absolute_timestamp,
 			})
 			counter += 1
 		elif action_type == "key_combination":
@@ -124,6 +163,8 @@ def convert_to_llm_format(task_directory: Path, data: Dict, screenshot_subdir: O
 				"key": current_key,
 				"translation": translation,
 				"ss_path": ss_path,
+				"timestamp": timestamp,
+				"absolute_timestamp": absolute_timestamp,
 			})		
 			counter += 1	
 		elif action_type == "type":
@@ -146,6 +187,8 @@ def convert_to_llm_format(task_directory: Path, data: Dict, screenshot_subdir: O
 				"type": "type",
 				"key": key_accumulated,
 				"ss_path": first_key_path,
+				"timestamp": timestamp,
+				"absolute_timestamp": absolute_timestamp,
 			})
 			key_accumulated = ""
 			first_key_path = None
@@ -163,6 +206,8 @@ def convert_to_llm_format(task_directory: Path, data: Dict, screenshot_subdir: O
 				"duration": duration,
 				"individual_scrolls": individual_scrolls,
 				"ss_path": ss_path,
+				"timestamp": timestamp,
+				"absolute_timestamp": absolute_timestamp,
 			})
 			counter += 1
 	# Flush any remaining accumulated keys at the end
@@ -172,6 +217,8 @@ def convert_to_llm_format(task_directory: Path, data: Dict, screenshot_subdir: O
 			"type": "type",
 			"key": key_accumulated,
 			"ss_path": first_key_path,
+			"timestamp": timestamp,
+			"absolute_timestamp": absolute_timestamp,
 		})
 		key_accumulated = ""
 		first_key_path = None
@@ -181,6 +228,8 @@ def convert_to_llm_format(task_directory: Path, data: Dict, screenshot_subdir: O
 		"id": counter,
 		"type": "stop",
 		"ss_path": make_screenshot_path(len(events)),
+		"timestamp": events[-1].get("timestamp") if events else None,
+		"absolute_timestamp": events[-1].get("absoluteTimestamp") if events else None,
 	})
 	return llm_format
 

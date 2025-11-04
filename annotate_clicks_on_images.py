@@ -221,19 +221,47 @@ def annotate_chat(chat_path: Path, workspace_root: Optional[Path] = None) -> Lis
     return out_paths
 
 
+def iter_chat_files(chat: Optional[Path], chat_root: Optional[Path]) -> Iterable[Path]:
+    if chat:
+        yield chat
+        return
+    if not chat_root:
+        return
+    root = chat_root.resolve()
+    if root.is_file() and root.name == "chat.jsonl":
+        yield root
+        return
+    if not root.exists():
+        raise FileNotFoundError(f"Chat root does not exist: {root}")
+    for path in sorted(root.rglob("chat.jsonl"), key=lambda p: p.as_posix()):
+        yield path
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Annotate click actions on images using normalized (x,y) ratios.")
-    parser.add_argument("--chat", required=True, type=Path, help="Path to chat.jsonl")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--chat", type=Path, help="Path to a single chat.jsonl file.")
+    group.add_argument("--chat-root", type=Path, help="Directory to search for chat.jsonl files (annotates all found).")
     parser.add_argument("--workspace", type=Path, default=None, help="Workspace root (defaults to repo root)")
     args = parser.parse_args()
 
-    outputs = annotate_chat(args.chat, args.workspace)
-    if not outputs:
-        print("No annotations produced (no clicks found or no images resolved).")
-    else:
-        print("Annotated files:")
-        for p in outputs:
-            print(str(p))
+    any_outputs = False
+    for chat_path in iter_chat_files(args.chat, args.chat_root):
+        print(f"Annotating chat: {chat_path}")
+        try:
+            outputs = annotate_chat(chat_path, args.workspace)
+        except Exception as exc:
+            print(f"  Failed to annotate {chat_path}: {exc}")
+            continue
+        if outputs:
+            any_outputs = True
+            for out in outputs:
+                print(f"  -> {out}")
+        else:
+            print("  No annotations produced (no clicks found or no images resolved).")
+
+    if not any_outputs:
+        print("Finished without creating any new annotations.")
 
 
 if __name__ == "__main__":
