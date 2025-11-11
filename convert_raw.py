@@ -1,13 +1,16 @@
 import argparse
 import json
 import os
+import re
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 SCREENSHOT_DIR_OPTIONS = (
 	Path("imgs"),
 	Path("videos") / "frames_display_1",
 )
+TRANSCRIPT_SUFFIX = ".transcript.json"
 
 
 def resolve_default_data_root() -> Path:
@@ -98,6 +101,7 @@ def convert_to_llm_format(task_directory: Path, data: Dict, screenshot_subdir: O
 		ss_path = make_screenshot_path(event_id)
 		timestamp = event.get("timestamp")
 		absolute_timestamp = event.get("absoluteTimestamp")
+		shift_letter = normalize_shift_letter(event) if action_type == "key_combination" else None
 
 		if action_type == "click":
 			x = event["x"]
@@ -154,6 +158,52 @@ def convert_to_llm_format(task_directory: Path, data: Dict, screenshot_subdir: O
 				"absolute_timestamp": absolute_timestamp,
 			})
 			counter += 1
+		elif action_type == "type" or shift_letter:
+			current_key = shift_letter if shift_letter is not None else event.get("key", "")
+			if current_key in {"LEFT_SHIFT", "RIGHT_SHIFT", "SHIFT"}:
+				continue
+			if current_key == "SPACE":
+				current_key = " "
+			if current_key == "NUMPAD_ENTER":
+				current_key = " + ENTER"
+			if not current_key:
+				continue
+			if current_key == "BACKSPACE":
+				if key_accumulated:
+					key_accumulated = key_accumulated[:-1]
+					if not key_accumulated:
+						first_key_path = None
+				else:
+					llm_format.append({
+						"id": counter,
+						"type": "type",
+						"key": "BACKSPACE",
+						"ss_path": ss_path,
+						"timestamp": timestamp,
+						"absolute_timestamp": absolute_timestamp,
+					})
+					counter += 1
+				continue
+			if first_key_path is None:
+				first_key_path = ss_path
+			key_accumulated += current_key
+			next_is_key = False
+			if i + 1 < len(events):
+				next_is_key = is_typing_event(events[i + 1])
+			if next_is_key:
+				continue
+			if key_accumulated:
+				llm_format.append({
+					"id": counter,
+					"type": "type",
+					"key": key_accumulated,
+					"ss_path": first_key_path or ss_path,
+					"timestamp": timestamp,
+					"absolute_timestamp": absolute_timestamp,
+				})
+				counter += 1
+			key_accumulated = ""
+			first_key_path = None
 		elif action_type == "key_combination":
 			current_key = event.get("combination", "")
 			translation = event.get("combinationName")
@@ -167,32 +217,6 @@ def convert_to_llm_format(task_directory: Path, data: Dict, screenshot_subdir: O
 				"absolute_timestamp": absolute_timestamp,
 			})		
 			counter += 1	
-		elif action_type == "type":
-			current_key = event.get("key", "")
-			if first_key_path is None:
-				first_key_path = ss_path
-			if current_key == "SPACE":
-				current_key = " "
-			if current_key == "NUMPAD_ENTER":
-				current_key = " + ENTER"
-			key_accumulated += current_key
-			next_is_key = False
-			if i + 1 < len(events):
-				next_type = events[i + 1].get("type")
-				next_is_key = (next_type == "type")
-			if next_is_key:
-				continue
-			llm_format.append({
-				"id": counter,
-				"type": "type",
-				"key": key_accumulated,
-				"ss_path": first_key_path,
-				"timestamp": timestamp,
-				"absolute_timestamp": absolute_timestamp,
-			})
-			key_accumulated = ""
-			first_key_path = None
-			counter += 1
 		elif action_type == "scroll_sequence":
 			direction = event.get("direction")
 			total_amount = event.get("totalAmount")
@@ -216,13 +240,16 @@ def convert_to_llm_format(task_directory: Path, data: Dict, screenshot_subdir: O
 			"id": counter,
 			"type": "type",
 			"key": key_accumulated,
-			"ss_path": first_key_path,
+			"ss_path": first_key_path or ss_path,
 			"timestamp": timestamp,
 			"absolute_timestamp": absolute_timestamp,
 		})
 		key_accumulated = ""
 		first_key_path = None
 		counter += 1
+	transcript_segments = load_transcript_segments(task_directory, data)
+	if transcript_segments:
+		attach_chain_of_thought(llm_format, transcript_segments)
 	# Append a final stop event with the next id
 	llm_format.append({
 		"id": counter,
@@ -269,3 +296,193 @@ def main() -> None:
 
 if __name__ == "__main__":
 	main()
+
+
+def load_transcript_segments(task_directory: Path, session_data: Dict) -> List[Dict]:
+	"""Load Whisper transcript segments for the task directory."""
+	videos_dir = task_directory / "videos"
+	if not videos_dir.is_dir():
+		return []
+
+	transcript_files = sorted(videos_dir.glob(f"*{TRANSCRIPT_SUFFIX}"))
+	if not transcript_files:
+		return []
+
+	selected = select_best_transcript(transcript_files, session_data.get("metadata") or {})
+	if selected is None:
+		return []
+
+	try:
+		with selected.open("r", encoding="utf-8") as handle:
+			payload = json.load(handle)
+	except (json.JSONDecodeError, OSError) as exc:
+		print(f"Warning: unable to read transcript {selected}: {exc}")
+		return []
+
+	segments = payload.get("segments")
+	if not isinstance(segments, list):
+		return []
+
+	results: List[Dict] = []
+	for segment in segments:
+		start = coerce_float(segment.get("start"))
+		end = coerce_float(segment.get("end"))
+		text = (segment.get("text") or "").strip()
+		if start is None or end is None or not text:
+			continue
+		if end < start:
+			start, end = end, start
+		results.append({"start": start, "end": end, "text": text})
+
+	results.sort(key=lambda item: item["start"])
+	return results
+
+
+def select_best_transcript(files: Sequence[Path], metadata: Dict) -> Optional[Path]:
+	"""Select the transcript file whose timestamp best matches the session metadata."""
+	if not files:
+		return None
+
+	target_start_ms = None
+	video_meta = metadata.get("video") if isinstance(metadata, dict) else None
+	if isinstance(video_meta, dict):
+		target_start_ms = coerce_float(video_meta.get("startTime"))
+
+	def score(path: Path) -> float:
+		if target_start_ms is None:
+			return 0.0
+		ts = parse_timestamp_from_name(path)
+		if ts is None:
+			return float("inf")
+		return abs(ts * 1000 - target_start_ms)
+
+	sorted_files = sorted(files, key=score)
+	best = sorted_files[0]
+	if target_start_ms is not None and not is_finite(score(best)):
+		# All candidates failed to parse a timestamp; fall back to the first file.
+		return files[0]
+	return best
+
+
+def parse_timestamp_from_name(path: Path) -> Optional[float]:
+	"""Parse the timestamp embedded in a transcript filename (seconds since epoch)."""
+	name = path.name
+	if name.endswith(TRANSCRIPT_SUFFIX):
+		name = name[: -len(TRANSCRIPT_SUFFIX)]
+	if name.endswith(".json"):
+		name = name[:-5]
+	if name.endswith(".transcript"):
+		name = name[: -len(".transcript")]
+	try:
+		parsed = datetime.strptime(name, "%Y-%m-%d %H-%M-%S")
+	except ValueError:
+		return None
+	return parsed.timestamp()
+
+
+def coerce_float(value: Optional[float]) -> Optional[float]:
+	if isinstance(value, (int, float)):
+		return float(value)
+	return None
+
+
+def is_finite(value: float) -> bool:
+	return value == value and value not in (float("inf"), float("-inf"))
+
+
+def attach_chain_of_thought(events: List[Dict], segments: List[Dict]) -> None:
+	"""Attach transcript snippets to the earliest overlapping event."""
+	if not events or not segments:
+		return
+
+	event_ranges: List[Optional[Tuple[float, float]]] = [compute_event_window(event) for event in events]
+	search_index = 0
+	for segment in segments:
+		start = coerce_float(segment.get("start"))
+		end = coerce_float(segment.get("end"))
+		text = (segment.get("text") or "").strip()
+		if start is None or end is None or not text:
+			continue
+		if end < start:
+			start, end = end, start
+		idx = max(search_index, 0)
+		while idx < len(events):
+			event = events[idx]
+			if (event.get("type") or "").lower() == "stop":
+				idx += 1
+				continue
+			window = event_ranges[idx]
+			if window is None:
+				idx += 1
+				continue
+			window_start, window_end = window
+			if window_end >= start and window_start <= end:
+				event.setdefault("thought_segments", []).append({
+					"start": start,
+					"end": end,
+					"text": text,
+				})
+				search_index = idx
+				break
+			if window_start > end:
+				break
+			idx += 1
+
+	for event in events:
+		segments_for_event = event.get("thought_segments")
+		if not segments_for_event:
+			continue
+		text_parts = [seg.get("text", "").strip() for seg in segments_for_event if seg.get("text")]
+		if text_parts:
+			event["chain_of_thought"] = " ".join(text_parts).strip()
+
+
+def compute_event_window(event: Dict) -> Optional[Tuple[float, float]]:
+	"""Return (start, end) timestamps for an event in video-time seconds."""
+	timestamp = coerce_float(event.get("timestamp"))
+	start = coerce_float(event.get("start_timestamp"))
+	end = coerce_float(event.get("end_timestamp"))
+
+	if start is None and end is None:
+		if timestamp is None:
+			return None
+		start = end = timestamp
+	elif start is None:
+		start = timestamp if timestamp is not None else end
+	elif end is None:
+		end = timestamp if timestamp is not None else start
+
+	if start is None or end is None:
+		return None
+
+	if end < start:
+		start, end = end, start
+	return float(start), float(end)
+
+
+def normalize_shift_letter(event: Dict[str, Any]) -> Optional[str]:
+	"""Return uppercase letter if event is a Shift+letter combination."""
+	combination_sources = [
+		event.get("combination"),
+		event.get("combinationName"),
+	]
+	for source in combination_sources:
+		if not source:
+			continue
+		cleaned = source.replace(" ", "")
+		match = re.fullmatch(r"(?i)shift\+([a-z])", cleaned)
+		if match:
+			return match.group(1).upper()
+	return None
+
+
+def is_typing_event(event: Dict[str, Any]) -> bool:
+	"""Return True if the event contributes characters to a typing sequence."""
+	if not isinstance(event, dict):
+		return False
+	event_type = event.get("type")
+	if event_type == "type":
+		return True
+	if event_type == "key_combination" and normalize_shift_letter(event):
+		return True
+	return False

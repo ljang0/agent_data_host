@@ -297,6 +297,13 @@ def build_assistant_event(event: Dict[str, Any]) -> Dict[str, Any]:
 	elif action_type == "stop":
 		assistant["raw"] = "stop"
 
+	chain_of_thought = (event.get("chain_of_thought") or "").strip()
+	if chain_of_thought:
+		assistant["chainOfThought"] = chain_of_thought
+	thought_segments = event.get("thought_segments")
+	if isinstance(thought_segments, list) and thought_segments:
+		assistant["thoughtSegments"] = thought_segments
+
 	assistant["ss_path"] = event.get("ss_path")
 	return assistant
 
@@ -367,7 +374,7 @@ def build_task_entry(
 		steps.append(step_entry)
 
 		timeline.append({"role": "user", "content": user_raw})
-		timeline.append({"role": "assistant", "content": assistant_event.get("raw", assistant_event.get("type", ""))})
+		timeline.append({"role": "assistant", "content": format_assistant_timeline_entry(assistant_event)})
 
 	action_breakdown: Dict[str, int] = {}
 	for step in steps:
@@ -501,6 +508,18 @@ def build_chat_dataset(users_root: Path, output_root: Path) -> Dict[str, Any]:
 		"assetsRoot": assets_root.as_posix(),
 		"outputPath": (output_root / "trajectories.json").as_posix(),
 	}
+
+
+def format_assistant_timeline_entry(assistant_event: Dict[str, Any]) -> str:
+	"""Compose a chat timeline entry that includes chain-of-thought when available."""
+	parts: List[str] = []
+	chain = (assistant_event.get("chainOfThought") or "").strip()
+	if chain:
+		parts.append(f"[thought] {chain}")
+	raw = assistant_event.get("raw") or assistant_event.get("type") or ""
+	if raw:
+		parts.append(raw)
+	return "\n".join(parts)
 
 
 def main() -> None:
