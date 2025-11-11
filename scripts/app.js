@@ -410,6 +410,18 @@ function renderInfoBlock(label, value) {
   return block;
 }
 
+function extractChainOfThought(action) {
+  if (!action) return '';
+  if (action.chainOfThought) return action.chainOfThought;
+  if (Array.isArray(action.thoughtSegments) && action.thoughtSegments.length) {
+    return action.thoughtSegments
+      .map((segment) => (segment?.text || '').trim())
+      .filter(Boolean)
+      .join(' ');
+  }
+  return '';
+}
+
 function renderStep(step) {
   const card = el('article', 'step-card');
 
@@ -428,6 +440,10 @@ function renderStep(step) {
   if (step.assistant.raw) {
     const rawAction = renderInfoBlock('Raw Command', `<code>${escapeHtml(step.assistant.raw)}</code>`);
     details.appendChild(rawAction);
+  }
+  const chainOfThought = extractChainOfThought(step.assistant);
+  if (chainOfThought) {
+    details.appendChild(renderInfoBlock('Chain of Thought', formatMultiline(chainOfThought)));
   }
 
   if (step.user?.text) {
